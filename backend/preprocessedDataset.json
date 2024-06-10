@@ -1,0 +1,42 @@
+[
+  {
+    "intent": "Greetings",
+    "examples": [
+      "hello",
+      "hi",
+      "good morn"
+    ]
+  },
+  {
+    "intent": "Order Status",
+    "examples": [
+      "check statu order",
+      "packag",
+      "im wait deliveri provid updat"
+    ]
+  },
+  {
+    "intent": "Technical Support",
+    "examples": [
+      "im have troubl log account",
+      "payment isnt go",
+      "websit displai error messag help"
+    ]
+  },
+  {
+    "intent": "Product Information",
+    "examples": [
+      "featur latest product",
+      "tell price plan",
+      "offer discount product"
+    ]
+  },
+  {
+    "intent": "Transfer to Human Agent",
+    "examples": [
+      "speak human agent",
+      "need talk someon",
+      "transfer repres pleas"
+    ]
+  }
+]

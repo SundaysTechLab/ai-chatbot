@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CS Chatbot - AI Technologies for Business </title>
+    <link rel="stylesheet" href="styles.css"> 
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="header-menu">
+                <a href="/" class="menu-item">Home</a>
+                <a href="/login" class="menu-item">Login</a>
+                <a href="/chat" class="menu-item">CS Chatbot</a>
+                <a href="/profile" class="menu-item">Profile</a>
+                <a href="/logout" class="menu-item">Log Out</a>
+            </div>
+        </header>
+    <div class="chat-container">
+        <div class="chat-box" id="chat-box">
+            <h1 style="text-align: center;">Welcome to AI Technologies for Business Customer Support</h1>
+            <h3 style="text-align: center;">We are here to help you with whatever challenges and enquiries you have. Pls let us know how we can help you.</h3>
+        
+            <!-- Chat messages will be displayed here -->
+            
+        </div>
+        <!-- Use a <form> element to wrap the input field and send button -->
+        <form id="message-form">
+            <div class="input-and-icons">
+                <input type="text" id="user-input" placeholder="Type your message...">
+                <button type="submit" id="send-btn">SEND</button>
+                <div class="chat-controls">
+                    <button type="button" id="speakButton" class="icon-button"><i class="fas fa-volume-up"></i></button>
+                    <button type="button" id="listenButton" class="icon-button"><i class="fas fa-microphone"></i></button>
+                </div>
+        </div>
+        </form>
+    </div>
+    <!-- Link to your JavaScript file for interaction -->
+    <script src="script.js"></script>
+</body>
+</html>

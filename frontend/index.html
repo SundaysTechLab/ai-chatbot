@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Technologies for Business</title>
+    <link rel="stylesheet" href="styles.css"> <!-- Link to your CSS file for styling -->
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="header-menu">
+                <a href="/" class="menu-item">Home</a>
+                <a href="/login" class="menu-item">Login</a>
+                <a href="/chat" class="menu-item">CS Chatbot</a>
+                <a href="/profile" class="menu-item">Profile</a>
+                <a href="/logout" class="menu-item">Log Out</a>
+            </div>
+            <h1>Welcome to AI Technologies for Business</h1>
+            <h3 style="text-align: center;">We leverage AI to provide Tech Solutions to your Business Problems</h3>
+        </header>
+        <main>
+            <p>If you've purchased a copy of our AI Chatbot for Customer Service Software or you want to buy but have questions, fill out the form below to contact our support team. </br></br> Our customer support team is available 24/7 to assist you with any challenges and enquiries you have with our product.</p>
+            <p>If you already have an account, <b><a href="/login" >LOGIN HERE</a></b></p>
+            <form id="signup-form" action="/" method="post">
+                <div class="form-group">
+                    <label for="name">Name</label>
+                    <input type="text" id="name" name="name" required>
+                </div>
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <input type="email" id="email" name="email" required>
+                </div>
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" name="password" required>
+                </div>
+                <button type="submit">SIGN UP</button>
+            </form>
+        </main>
+    </div>
+    <div id="error-message" class="error-message"></div>
+    
+    <!-- Link to your JavaScript file for interaction -->
+    <script src="script.js"></script>
+</body>
+</html>

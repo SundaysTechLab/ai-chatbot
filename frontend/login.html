@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - AI Technologies for Business</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        /* Additional styles specific to the login page */
+        /* Add any additional CSS specific to the login page here */
+    </style>
+</head>
+<body>
+    <header>
+        <div class="header-menu">
+            <a href="/" class="menu-item">Home</a>
+            <a href="/login" class="menu-item">Login</a>
+            <a href="/chat" class="menu-item">CS Chatbot</a>
+            <a href="/profile" class="menu-item">Profile</a>
+            <a href="/logout" class="menu-item">Log Out</a>
+        </div>
+    </header>
+    <div class="login-container">
+        <div class="login-box">
+            <h1 style="text-align: center;">Welcome to AI Technologies for Business</h1>
+            <h3 style="text-align: center;">We leverage AI to provide Tech Solutions to your Business Problems</h3>
+            <p style="text-align: center;">If you already have an account, please log in below:</p>
+
+            <!-- Login form -->
+            <form id="login-form" action="/login" method="post">
+                <label for="email">Email:</label>
+                <input type="email" id="email" name="email" required>
+                <label for="password">Password:</label>
+                <input type="password" id="password" name="password" required>
+                <button type="submit" class="login-button">LOGIN</button>
+            </form>
+        </div>
+    </div>
+    <!-- JavaScript -->
+    <script src="script.js"></script>
+</body>
+</html>

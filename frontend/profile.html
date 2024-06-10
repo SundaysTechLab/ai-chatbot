@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile</title>
+    <link rel="stylesheet" href="styles.css"> <!-- Link to your CSS file for styling -->
+    <style>
+        /* Additional CSS for equalizing input field sizes */
+        input[type="text"],
+        input[type="email"],
+        input[type="password"],
+        input[type="tel"],
+        textarea {
+            width: calc(100% - 20px); /* Adjust the width to match other input fields */
+            margin: 5px 0; /* Add margin for spacing */
+            padding: 8px; /* Add padding for better appearance */
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-sizing: border-box; /* Include padding and border in the element's total width and height */
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="header-menu">
+                <a href="/" class="menu-item">Home</a>
+                <a href="/login" class="menu-item">Login</a>
+                <a href="/chat" class="menu-item">CS Chatbot</a>
+                <a href="/profile" class="menu-item">Profile</a>
+                <a href="/logout" class="menu-item">Log Out</a>
+            </div>
+        </header>
+        <h1 style="text-align: center;">User Profile</h1>
+        <p style="text-align: center;">Welcome to your profile page. Here you can manage your account settings and preferences.</p>
+        
+        <!-- Profile form -->
+        <form id="profile-form" action="/profile" method="put">
+            <label for="name">Name:</label>
+            <input type="text" id="name" name="name" required>
+
+            <label for="email">Email:</label>
+            <input type="email" id="email" name="email" required>
+
+            <label for="password">Password:</label>
+            <input type="password" id="password" name="password" required>
+
+            <label for="phone">Phone Number:</label>
+            <input type="tel" id="phoneNumber" name="phoneNumber">
+
+            <label for="address">Address:</label>
+            <textarea id="address" name="address"></textarea>
+
+            <button type="submit">UPDATE PROFILE</button>
+        </form>
+    </div>
+    <div id="message" style="display: none;"></div>
+    <!-- Link to your JavaScript file for interaction -->
+    <script src="script.js"></script>
+</body>
+</html>

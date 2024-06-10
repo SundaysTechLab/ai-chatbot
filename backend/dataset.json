@@ -1,0 +1,46 @@
+{
+    "intents": [
+        {
+          "intent": "Greetings",
+          "examples": [
+            "Hello!",
+            "Hi there, how are you?",
+            "Good morning!"
+          ]
+        },
+      {
+        "intent": "Order Status",
+        "examples": [
+          "Can you check the status of my order?",
+          "Where is my package?",
+          "I'm waiting for my delivery, can you provide an update?"
+        ]
+      },
+      {
+        "intent": "Technical Support",
+        "examples": [
+          "I'm having trouble logging into my account.",
+          "My payment isn't going through, what should I do?",
+          "The website is displaying an error message, can you help?"
+        ]
+      },
+      {
+        "intent": "Product Information",
+        "examples": [
+          "What are the features of your latest product?",
+          "Tell me about your pricing plans.",
+          "Do you offer any discounts on your products?"
+        ]
+      },
+      {
+        "intent": "Transfer to Human Agent",
+        "examples": [
+            "Can I speak to a human agent?",
+            "I need to talk to someone.",
+            "Transfer me to a representative, please."
+        ]
+      }
+   
+    ]
+  }
+  
