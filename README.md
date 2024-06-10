@@ -15,24 +15,35 @@ This project implements an AI-based chatbot for customer service using Node.js, 
 
 ### Prerequisites
 
-- Node.js
-- npm
+- Node.js (version 20.x.x recommended)
+- npm (version 6.x.x recommended)
 
 ### Installation
 
 1. Clone the repository:
-   ```sh
-   git clone https://github.com/<YOUR_GITHUB_USERNAME>/<YOUR_REPO_NAME>.git
-Install dependencies:
-sh
-Copy code
-npm install
-Running the Application
-sh
-Copy code
-node server.js
+    ```sh
+    git clone https://github.com/SundaysTechLab/ai-chatbot.git
+    ```
+2. Navigate to the project directory:
+    ```sh
+    cd ai-chatbot
+    ```
+3. Install dependencies:
+    ```sh
+    npm install
+    ```
+
+### Running the Application
+
+To start the server, run the following command:
+
+```sh
+node backend/server.js
+
 Deployment
-The project is best deployed using a platform like Render.
+The application is configured to be deployed on Render. Ensure the Start Command in Render's settings is set to:
+
+node backend/server.js
 
 License
 This project is licensed under the MIT License - see the LICENSE file for details.
