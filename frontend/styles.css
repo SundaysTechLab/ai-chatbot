@@ -108,6 +108,10 @@ button:hover {
     margin-top: 10px;
 }
 
+.menu-item[href="/login"] {
+  color: #00BFFF;
+}
+
 .chat-container {
     display: flex;
     flex-direction: column;
