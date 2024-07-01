@@ -1,4 +1,4 @@
-// server.js
+//1. Import Necessay Dependencies/Modules
 
 const express = require('express');
 const bodyParser = require('body-parser');
@@ -11,30 +11,35 @@ const saltRounds = 10;
 const jwt = require('jsonwebtoken');
 const authenticate = require('./authMiddleware');
 const User = require('../models/User');
+const natural = require('natural');
+const tokenizer = new natural.WordTokenizer();
+const Tagger = require('wink-pos-tagger');
+const tagger = new Tagger();
 
-// Create an Express application
+// 2. Initialize Express Application
 const app = express();
 
-app.use(express.urlencoded({ extended: true }));
-app.use(express.json());
+// 3. Middleware Setup for parsing, session handling & cross-origin request
+  app.use(express.urlencoded({ extended: true }));
+  app.use(express.json());
 
-// Use bodyParser middleware to parse JSON requests
-app.use(bodyParser.json());
-app.use(cors());
+  // Use bodyParser middleware to parse JSON requests
+  app.use(bodyParser.json());
+  app.use(cors());
 
-// Initialize and configure express-session
-app.use(session({
-  secret: '1X0t7pZk$fjG@^3rM#DLn6qA9C!eH5sJ', // Secret key for session encryption
-  resave: false,
-  saveUninitialized: true
-}));
+  // Initialize and configure express-session
+  app.use(session({
+    secret: '1X0t7pZk$fjG@^3rM#DLn6qA9C!eH5sJ', // Secret key for session encryption
+    resave: false,
+    saveUninitialized: true
+  }));
 
-// Serve static files from the 'frontend' directory
+// 4. Serve static files from the 'frontend' directory
 const frontendPath = path.join(__dirname, '..', 'frontend');
 console.log('Frontend path:', frontendPath);
 app.use(express.static(frontendPath));
 
-// Define routes for each HTML page
+// 4a. Define routes for each HTML page
 app.get('/', (req, res) => {
   res.sendFile('index.html', { root: path.join(__dirname, 'frontend') });
 });
@@ -51,91 +56,8 @@ app.get('/chat', (req, res) => {
   res.sendFile(path.join(frontendPath, 'chat.html'));
 });
 
-app.get('/api/profile', authenticate, (req, res) => {
-  console.log('req.user:', req.user); // Debugging line
-    getUserProfile(req.user.userId)
-      .then(userProfile => {
-            res.json(userProfile);
-        })
-      .catch(error => {
-            console.error(error);
-            res.status(500).json({ message: 'Error fetching user profile' });
-        });
-});
-
-app.get('/logout', (req, res) => {
-  req.session.destroy(err => {
-    if (err) {
-      console.error('Error logging out:', err);
-      res.status(500).json({ message: 'An error occurred while logging out.' });
-    } else {
-      res.status(200).json({ message: 'Successfully logged out.' });
-    }
-  });
-})
-
-// Connect to MongoDB
-mongoose.connect('mongodb+srv://sundaystechlab:S0UAGyDdthtNgK2Q@cluster0.pjshx76.mongodb.net/chatbot?retryWrites=true&w=majority&appName=Cluster0',)
-  .then(() => console.log('MongoDB connected'))
-  .catch(err => console.error(err));
-
-// funtion to fetch user profile
-function getUserProfile(userId) {
-    console.log('Fetching profile for user ID:', userId);
-    return User.findById(userId)
-      .then(user => {
-            if (!user) {
-                console.error('User not found');
-                throw new Error('User not found');
-            }
-            const { password,...userProfile } = user._doc;
-            console.log('User profile:', userProfile);
-            return userProfile;
-        })
-      .catch(error => {
-            console.error('Error fetching user profile:', error);
-            throw new Error('Error fetching user profile');
-        });
-}
-
-// Route for handling User Signup
-app.post('/', async (req, res) => {
-  // Extract email, password, and name from the request body
-  const { email, password, name } = req.body;
-
-  try {
-    // Check if email, password, and name are provided
-    if (!email || !password || !name) {
-      return res.status(400).json({ message: 'Name, email, and password are required.' });
-    }
-
-    // Check if user with the provided email already exists
-    const existingUser = await User.findOne({ email });
-    if (existingUser) {
-      return res.status(400).json({ message: 'Email is already registered.' });
-    }
-
-    // Hash the password before creating the user
-    const hashedPassword = await bcrypt.hash(password, saltRounds); // Hash the password
-    const newUser = new User({ name, email, password: hashedPassword }); // Use hashedPassword instead of plain password
-    await newUser.save();
-
-    // Respond with success message
-    res.status(201).json({ message: 'Your account has been registered successfully.' });
-  } 
-  catch (error) {
-    console.error('Error signing up user:', error);
-    res.status(500).json({ message: 'An error occurred while signing up user.' });
-  }
-
-  // Redirect any access to /signup to the root
-  app.all('/signup', (req, res) => {
-  res.redirect('/');
-  });
-});
-
-
-// Login Endpoint
+// 5. Authentication Setup for Login & Logout Routes
+// 5a. Login Endpoint
 app.post('/login', async (req, res) => {
   // Extract email and password from the request body
   const { email, password } = req.body;
@@ -172,8 +94,89 @@ app.post('/login', async (req, res) => {
   }
 });
 
+// 5b. Logout Route
+app.get('/logout', (req, res) => {
+  req.session.destroy(err => {
+    if (err) {
+      console.error('Error logging out:', err);
+      res.status(500).json({ message: 'An error occurred while logging out.' });
+    } else {
+      res.status(200).json({ message: 'Successfully logged out.' });
+    }
+  });
+})
 
-// Update Profile Route
+// 6. Other Routes Definition API endpoints & functions
+
+// 6a. Route for handling User Signup
+app.post('/', async (req, res) => {
+  // Extract email, password, and name from the request body
+  const { email, password, name } = req.body;
+
+  try {
+    // Check if email, password, and name are provided
+    if (!email || !password || !name) {
+      return res.status(400).json({ message: 'Name, email, and password are required.' });
+    }
+
+    // Check if user with the provided email already exists
+    const existingUser = await User.findOne({ email });
+    if (existingUser) {
+      return res.status(400).json({ message: 'Email is already registered.' });
+    }
+
+    // Hash the password before creating the user
+    const hashedPassword = await bcrypt.hash(password, saltRounds); // Hash the password
+    const newUser = new User({ name, email, password: hashedPassword }); // Use hashedPassword instead of plain password
+    await newUser.save();
+
+    // Respond with success message
+    res.status(201).json({ message: 'Your account has been registered successfully.' });
+  } 
+  catch (error) {
+    console.error('Error signing up user:', error);
+    res.status(500).json({ message: 'An error occurred while signing up user.' });
+  }
+
+  // Redirect any access to /signup to the root
+  app.all('/signup', (req, res) => {
+  res.redirect('/');
+  });
+});
+
+// 6b. Route for Fetching Current User Profile Data
+app.get('/api/profile', authenticate, (req, res) => {
+  console.log('req.user:', req.user); // Debugging line
+    getUserProfile(req.user.userId)
+      .then(userProfile => {
+            res.json(userProfile);
+        })
+      .catch(error => {
+            console.error(error);
+            res.status(500).json({ message: 'Error fetching user profile' });
+        });
+});
+
+// funtion to fetch user profile
+function getUserProfile(userId) {
+  console.log('Fetching profile for user ID:', userId);
+  return User.findById(userId)
+    .then(user => {
+          if (!user) {
+              console.error('User not found');
+              throw new Error('User not found');
+          }
+          const { password,...userProfile } = user._doc;
+          console.log('User profile:', userProfile);
+          return userProfile;
+      })
+    .catch(error => {
+          console.error('Error fetching user profile:', error);
+          throw new Error('Error fetching user profile');
+      });
+}
+
+// 6c.  Update Profile Route
 app.put('/profile', authenticate, async (req, res) => {
   console.log('Request body:', req.body);
   try {
@@ -229,28 +232,9 @@ app.put('/profile', authenticate, async (req, res) => {
   }
 });
 
-// Global error handler middleware
-const errorHandler = (err, req, res, next) => {
-  console.error('An unexpected error occurred:', err);
+// 7. Chatbot Functions & Routes
 
-  // Set a default status code
-  let statusCode = 500;
-  let message = 'Internal Server Error';
-
-  // Customize error response based on error type
-  if (err instanceof SyntaxError && err.status === 400 && 'body' in err) {
-    // Handle JSON parsing errors
-    message = 'Invalid JSON payload';
-  }
-
-  // Send error response
-  res.status(statusCode).json({ error: { message } });
-};
-
-// Register global error handler middleware
-app.use(errorHandler);
-
-// Function to provide response based on predicted intent
+// 7a. Function to provide response based on predicted intent
 function provideResponse(predictedIntent, res) {
   switch (predictedIntent) {
     case 'Greetings':
@@ -279,8 +263,7 @@ function provideResponse(predictedIntent, res) {
   }
 }
 
-
-// Define a route to handle incoming user messages
+// 7b. Define a route to handle incoming user messages
 app.post('/message', authenticate, (req, res) => {
   // Extract the user message from the request body
   const { message } = req.body;
@@ -304,8 +287,7 @@ app.post('/message', authenticate, (req, res) => {
   console.log('Response sent:', res);
 });
 
-
-// Route Handler for Chat
+// 7c. Route Handler for Chat
 app.post("/chat", (req, res) => {
   const userInput = req.body.message;
   console.log('User input:', userInput); // Log user input
@@ -332,14 +314,7 @@ app.post("/chat", (req, res) => {
   }
 });
 
-
-// Import Natural
-const natural = require('natural');
-const tokenizer = new natural.WordTokenizer();
-const Tagger = require('wink-pos-tagger');
-const tagger = new Tagger();
-
-// Define Patterns and Responses for Pattern Matching Algorithm - maps user input to predefined responses
+// 8. Define Patterns and Responses for Pattern Matching Algorithm - maps user input to predefined responses
 const patternsAndResponses = {
   "hi|hello|hey": "Hello! Welcome to our customer support. How can I assist you today?",
   "help|need assistance|support": "Of course! I'm here to assist you with any questions or issues you may have. Feel free to ask.",
@@ -351,8 +326,7 @@ const patternsAndResponses = {
   "bye|goodbye|see you later": "Goodbye! If you need any help in the future, don't hesitate to contact us again."
 };
 
-
-// Implement Pattern Matching Algorithm with Natural
+// 8a. Implement Pattern Matching Algorithm with Natural
 function matchPattern(userInput) {
   // Perform Part of Speech tagging
   const taggedTokens = tagger.tagSentence(userInput);
@@ -387,19 +361,20 @@ function matchPattern(userInput) {
   return null;
 }
 
-
+// 8b. Import classifier data
 const classifierData = require('./classifier.json');
 
-  // Import the preprocessText and classifier function from trainClassifier.js
-  // console.log('Importing preprocessText and classifier function from trainClassifier.js');
+// 8c. Import the preprocessText and classifier function from trainClassifier.js
+
+    // console.log('Importing preprocessText and classifier function from trainClassifier.js');
   const { preprocessText, classifier } = require('./trainClassifier');
-  // console.log('preprocessText and classifier function imported successfully:', preprocessText, classifier);
+    // console.log('preprocessText and classifier function imported successfully:', preprocessText, classifier);
 
-// Log the classifier file content to inspect its structure
-// console.log('Classifier file content:', classifierData);
+  // Log the classifier file content to inspect its structure
+  // console.log('Classifier file content:', classifierData);
 
 
-// Ensure the classifier object is loaded and accessible
+// 8d. Ensure the classifier object is loaded and accessible
 if (classifier) {
   // Test output to verify the classifier object
   // console.log('Loaded classifier:', classifier);
@@ -407,10 +382,37 @@ if (classifier) {
   console.error('Classifier object not loaded properly.');
 }
 
-// Define the port for the server to listen on
+// 9. Connect to MongoDB
+mongoose.connect('mongodb+srv://sundaystechlab:S0UAGyDdthtNgK2Q@cluster0.pjshx76.mongodb.net/chatbot?retryWrites=true&w=majority&appName=Cluster0',)
+  .then(() => console.log('MongoDB connected'))
+  .catch(err => console.error(err));
+
+
+// 10. Global error handler middleware
+const errorHandler = (err, req, res, next) => {
+  console.error('An unexpected error occurred:', err);
+
+  // Set a default status code
+  let statusCode = 500;
+  let message = 'Internal Server Error';
+
+  // Customize error response based on error type
+  if (err instanceof SyntaxError && err.status === 400 && 'body' in err) {
+    // Handle JSON parsing errors
+    message = 'Invalid JSON payload';
+  }
+
+  // Send error response
+  res.status(statusCode).json({ error: { message } });
+};
+
+  // Register global error handler middleware
+  app.use(errorHandler);
+
+// 11. Define the port for the server to listen on
 const PORT = process.env.PORT || 5000;
 
-// Start the server
+// 12. Start the server
 app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
 });

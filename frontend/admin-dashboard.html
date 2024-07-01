@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Admin Dashboard</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="header-menu">
+                <a href="/admin/dashboard#" class="menu-item">Admin Dashboard</a>
+                <a href="/admin/users" class="menu-item">Customers Management</a>
+                <a href="/admin/chatbot" class="menu-item">Chatbot Management</a>
+                <a href="/admin/reports" class="menu-item">Reports & Analytics</a>
+            </div>
+        </header>
+
+    <main id="dashboard-content">
+    <p>Total Users: <span id="total-users"></span></p>
+    <p>Active Chats Today: <span id="active-chats-today"></span></p>
+    <ul id="recent-signups"></ul>
+    <p>Chatbot Accuracy: <span id="chatbot-accuracy"></span>%</p>
+
+    <script>
+    window.onload = async function() {
+        const response = await fetch('/admin/dashboard/data');
+        const data = await response.json();
+    
+        // Update HTML elements with the fetched data
+        document.getElementById('total-users').textContent = data.totalUsers;
+        document.getElementById('active-chats-today').textContent = data.activeChatsToday;
+        document.getElementById('recent-signups').innerHTML = data.recentSignUps.map(user => `<li>${user.name} signed up today</li>`).join('');
+        document.getElementById('chatbot-accuracy').textContent = `${data.chatbotAccuracy}%`;
+    };
+    </script>
+
+    </main>
+
+    <script src="script.js"></script> <!-- Your JavaScript file -->
+</body>
+</html>

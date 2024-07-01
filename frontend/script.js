@@ -1,179 +1,6 @@
 // script.js
 
-// Function to handle user login
-async function handleLogin(email, password) {
-    try {
-        const response = await fetch('/login', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ email, password }),
-        });
-        
-        if (!response.ok) {
-            const errorMessage = await response.json();
-            throw new Error(errorMessage.message);
-        }
-        
-        // Get the token from the response
-        const data = await response.json();
-        // After receiving the token from the server
-        const token = data.token;
-        console.log('Token received and stored:', token); // Log the token
-
-        // Store the token in local storage
-        localStorage.setItem('token', token);
-
-        // Redirect the user to the chat page
-        window.location.href = '/chat';
-    } catch (error) {
-        console.error('Error logging in:', error);
-        // Handle login error & display to user on the login page
-        const errorMessage = document.createElement('p');
-        errorMessage.textContent = error.message;
-        document.body.appendChild(errorMessage);
-    };
-}
-
-// Function to include the token in the Authorization header for protected routes
-function includeTokenInRequest(requestOptions) {
-    const token = localStorage.getItem('token');
-    console.log('Token being sent:', token); // Log the token being sent
-    if (token) {
-        requestOptions.headers = {
-            ...requestOptions.headers,
-            'Authorization': `Bearer ${token}`
-        };
-    }
-    return requestOptions;
-}
-
-// Example of using includeTokenInRequest for a fetch request to a protected route
-async function fetchProtectedResource() {
-    const requestOptions = {
-        method: 'GET',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-    };
-      // Use the function to include the token
-      const updatedRequestOptions = includeTokenInRequest(requestOptions);
-        console.log('Request options:', updatedRequestOptions); // Log the request options
-
-      // Make the request to chat route with the updated options
-      const response = await fetch('/chat', updatedRequestOptions);
-      // Handle the response
-}
-
-function sendMessageToServer(message) {
-    // Send an HTTP POST request to the server with the user message
-    const requestOptions = {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ message: message }),
-    };
-    const updatedRequestOptions = includeTokenInRequest(requestOptions);
-    fetch('/message', updatedRequestOptions)
-    .then(response => {
-        // Check if the response is successful
-        if (response.ok) {
-            // If successful, parse the JSON response
-            return response.json();
-        } else {
-            // If not successful, throw an error
-            throw new Error('Failed to receive response from server');
-        }
-    })
-    .then(data => {
-        // Handle the JSON response data here
-        // display the bot's response in the chat window
-        displayMessage(data.message, 'bot');
-    })
-    .catch(error => {
-        // Handle any errors that occurred during the request
-        console.error('Error sending message to server:', error);
-    });
-}
-
-async function updateProfile(profileData) {
-    // Define your request options
-    const requestOptions = {
-        method: 'PUT',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(profileData),
-    };
-
-    // Use the function to include the token
-    const updatedRequestOptions = includeTokenInRequest(requestOptions);
-
-    // Make the request to the /profile route with the updated options
-    const response = await fetch('/profile', updatedRequestOptions);
-    // Handle the response
-}
-
-
-// Add event listener to login form if the element exists
-document.addEventListener('DOMContentLoaded', function() {
-    const loginForm = document.getElementById('login-form');
-    if (loginForm) {
-        loginForm.addEventListener('submit', function(event) {
-            event.preventDefault(); // Prevent default form submission
-            const email = document.getElementById('email').value;
-            const password = document.getElementById('password').value;
-            handleLogin(email, password); // Call handleLogin function
-        });
-        console.log('Login form element found'); // Log success
-    } else {
-        console.log('Login form element not found'); // Log when not found
-    }
-
-    const messageForm = document.getElementById('message-form');
-    if (messageForm) {
-        messageForm.addEventListener('submit', handleSubmit);
-        console.log('Message form element found'); // Log success
-    } else {
-        console.log("Message form element not found."); // Log when not found
-    }
-});
-
-// Function to handle user input submission
-function handleSubmit(event) {
-    // Prevent the default form submission behavior
-    event.preventDefault();
-    
-    // Get the user input message from the input field
-    const userInput = document.getElementById('user-input').value;
-    
-    // Clear the input field
-    document.getElementById('user-input').value = '';
-    
-    // Display the user message in the chat window
-    displayMessage(userInput, 'user');
-    
-    // Send the user message to the server for processing
-    sendMessageToServer(userInput);
-}
-
-// Function to display a message in the chat window
-function displayMessage(message, sender) {
-    // Create a new chat bubble element
-    const chatBubble = document.createElement('div');
-    chatBubble.classList.add('chat-bubble');
-    chatBubble.classList.add(sender === 'user' ? 'user-message' : 'bot-message');
-    
-    // Set the text content of the chat bubble
-    chatBubble.textContent = message;
-    
-  // Update the ID used to retrieve the chat window element
-    document.getElementById('chat-box').appendChild(chatBubble);
-}
-
-// Handle the sign-up form submission
+// 1. Handle the sign-up form submission
 document.addEventListener('DOMContentLoaded', function() {
     const signupForm = document.getElementById('signup-form');
     const errorMessageContainer = document.getElementById('error-message');
@@ -220,8 +47,185 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 
+// 2. Function to handle user login
+async function handleLogin(email, password) {
+    try {
+        const response = await fetch('/login', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ email, password }),
+        });
+        
+        if (!response.ok) {
+            const errorMessage = await response.json();
+            throw new Error(errorMessage.message);
+        }
+        
+        // Get the token from the response
+        const data = await response.json();
+        // After receiving the token from the server
+        const token = data.token;
+        console.log('Token received and stored:', token); // Log the token
 
-// Function to fetch user profile data
+        // Store the token in local storage
+        localStorage.setItem('token', token);
+
+        // Redirect the user to the chat page
+        window.location.href = '/chat';
+    } catch (error) {
+        console.error('Error logging in:', error);
+        // Handle login error & display to user on the login page
+        const errorMessage = document.createElement('p');
+        errorMessage.textContent = error.message;
+        document.body.appendChild(errorMessage);
+    };
+}
+
+// 2a. Add event listener to login form
+document.addEventListener('DOMContentLoaded', function() {
+    const loginForm = document.getElementById('login-form');
+    if (loginForm) {
+        loginForm.addEventListener('submit', function(event) {
+            event.preventDefault(); // Prevent default form submission
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            handleLogin(email, password); // Call handleLogin function
+        });
+        console.log('Login form element found'); // Log success
+    } else {
+        console.log('Login form element not found'); // Log when not found
+    }
+
+    const messageForm = document.getElementById('message-form');
+    if (messageForm) {
+        messageForm.addEventListener('submit', handleSubmit);
+        console.log('Message form element found'); // Log success
+    } else {
+        console.log("Message form element not found."); // Log when not found
+    }
+});
+
+// 3. Token Mangagement - Function to include the token in the Authorization header for protected routes
+function includeTokenInRequest(requestOptions) {
+    const token = localStorage.getItem('token');
+    console.log('Token being sent:', token); // Log the token being sent
+    if (token) {
+        requestOptions.headers = {
+            ...requestOptions.headers,
+            'Authorization': `Bearer ${token}`
+        };
+    }
+    return requestOptions;
+}
+
+// 3a Example of using includeTokenInRequest for a fetch request to a protected route
+async function fetchProtectedResource() {
+    const requestOptions = {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+    };
+      // Use the function to include the token
+      const updatedRequestOptions = includeTokenInRequest(requestOptions);
+        console.log('Request options:', updatedRequestOptions); // Log the request options
+
+      // Make the request to chat route with the updated options
+      const response = await fetch('/chat', updatedRequestOptions);
+      // Handle the response
+}
+
+// 4. Chat Functionality
+
+//4a. Function to Send Message to Server
+function sendMessageToServer(message) {
+    // Send an HTTP POST request to the server with the user message
+    const requestOptions = {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ message: message }),
+    };
+    const updatedRequestOptions = includeTokenInRequest(requestOptions);
+    fetch('/message', updatedRequestOptions)
+    .then(response => {
+        // Check if the response is successful
+        if (response.ok) {
+            // If successful, parse the JSON response
+            return response.json();
+        } else {
+            // If not successful, throw an error
+            throw new Error('Failed to receive response from server');
+        }
+    })
+    .then(data => {
+        // Handle the JSON response data here
+        // display the bot's response in the chat window
+        displayMessage(data.message, 'bot');
+    })
+    .catch(error => {
+        // Handle any errors that occurred during the request
+        console.error('Error sending message to server:', error);
+    });
+}
+
+// 4b. Function to handle user input submission
+function handleSubmit(event) {
+    // Prevent the default form submission behavior
+    event.preventDefault();
+    
+    // Get the user input message from the input field
+    const userInput = document.getElementById('user-input').value;
+    
+    // Clear the input field
+    document.getElementById('user-input').value = '';
+    
+    // Display the user message in the chat window
+    displayMessage(userInput, 'user');
+    
+    // Send the user message to the server for processing
+    sendMessageToServer(userInput);
+}
+
+// 4c. Function to display a message in the chat window
+function displayMessage(message, sender) {
+    // Create a new chat bubble element
+    const chatBubble = document.createElement('div');
+    chatBubble.classList.add('chat-bubble');
+    chatBubble.classList.add(sender === 'user' ? 'user-message' : 'bot-message');
+    
+    // Set the text content of the chat bubble
+    chatBubble.textContent = message;
+    
+  // Update the ID used to retrieve the chat window element
+    document.getElementById('chat-box').appendChild(chatBubble);
+}
+
+// 5. Profile Management
+
+// 5a. Standalone function for updating profile programmatically
+async function updateProfile(profileData) {
+    // Define your request options
+    const requestOptions = {
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(profileData),
+    };
+
+    // Use the function to include the token
+    const updatedRequestOptions = includeTokenInRequest(requestOptions);
+
+    // Make the request to the /profile route with the updated options
+    const response = await fetch('/profile', updatedRequestOptions);
+    // Handle the response
+}
+
+// 5b. Function to fetch current user profile data from database
 async function fetchUserProfile() {
   // Include the token in the request headers for authentication
   const requestOptions = {
@@ -250,10 +254,10 @@ async function fetchUserProfile() {
   }
 }
 
-// Call this function when the profile page is loaded
-document.addEventListener('DOMContentLoaded', fetchUserProfile);
+    // Call this function when the profile page is loaded
+    document.addEventListener('DOMContentLoaded', fetchUserProfile);
 
-// Function for profile update
+// 5c. Event listener for profile form submission Function
 document.addEventListener('DOMContentLoaded', function() {
     const profileForm = document.getElementById('profile-form');
     if (profileForm) {
@@ -304,7 +308,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 })
 
-// Function to handle logout
+// 6. Function to handle logout
 function logout() {
   // Remove the token from localStorage
   localStorage.removeItem('token');
@@ -318,7 +322,7 @@ function logout() {
    .catch(error => console.error('Logout error:', error));
 }
 
-// Attach the logout function to the logout button
+// 6a. Attach the logout function to the logout button
 document.addEventListener('DOMContentLoaded', () => {
   // Select all elements with the class 'menu-item' and check if the text content is 'Log Out'
   document.querySelectorAll('.menu-item').forEach(button => {
@@ -331,7 +335,7 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 });
 
-// Text-to-Speech
+// 7. Text-to-Speech 
 document.getElementById('speakButton').addEventListener('click', (event) => {
     event.preventDefault();
   const chatBox = document.getElementById('chat-box');
@@ -340,7 +344,7 @@ document.getElementById('speakButton').addEventListener('click', (event) => {
   speechSynthesis.speak(utterance);
 });
 
-// Speech-to-Text
+// 8. Speech-to-Text
 const listenButton = document.getElementById('listenButton');
 let recognizing = false;
 const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition || window.mozSpeechRecognition || window.msSpeechRecognition)();
