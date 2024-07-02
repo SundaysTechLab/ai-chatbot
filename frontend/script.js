@@ -37,6 +37,9 @@ document.addEventListener('DOMContentLoaded', function() {
                 loginLink.href = '/login';
                 loginLink.textContent = ' Proceed to Login';
                 successMessage.appendChild(loginLink);
+
+                // Scroll the page to the success message
+                successMessage.scrollIntoView({ behavior: 'smooth' });
             } catch (error) {
                 console.error('Error registering user:', error);
                 errorMessageContainer.textContent = error.message; // Display error message on the sign-up page
