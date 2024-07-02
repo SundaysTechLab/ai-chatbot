@@ -159,3 +159,43 @@ button:hover {
 #listenButton {
     margin-right: px; /* Adjust as needed */
 }
+
+.chat-box {
+    height: 400px; /* Adjust based on your needs */
+    overflow-y: auto;
+    padding: 10px;
+    border: 1px solid #ccc;
+}
+
+.message-wrapper {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.sender-label {
+    background-color: #f0f0f0;
+    color: #333;
+    padding: 5px 10px;
+    border-radius: 5px;
+    margin-right: 10px;
+    font-size: 14px;
+}
+
+.chat-bubble {
+    padding: 10px;
+    border-radius: 5px;
+    max-width: 70%;
+}
+
+.user-message {
+    background-color: #007bff;
+    color: white;
+    align-self: flex-end; /* Align user messages to the right */
+}
+
+.bot-message {
+    background-color: #ddd;
+    color: black;
+    align-self: flex-start; /* Align bot messages to the left */
+}

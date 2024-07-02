@@ -142,7 +142,7 @@ app.get('/logout', (req, res) => {
 
 // 7. Other Routes Definition/API endpoints & functions
 
-// a. Route for handling User Signup
+// 7a. Route for handling User Signup
 app.post('/', async (req, res) => {
   // Extract email, password, and name from the request body
   const { email, password, name } = req.body;
@@ -178,7 +178,7 @@ app.post('/', async (req, res) => {
   });
 });
 
-// b. Admin Sign Up Route
+// 7b. Admin Sign Up Route
 app.post('/admin/signup', async (req, res) => {
   // console.log(req.body); // Debugging line
   // console.log(req.headers); // Debugging line
@@ -217,7 +217,7 @@ app.post('/admin/signup', async (req, res) => {
 }
 });
 
-// c. Route for Admin Login
+// 7c. Route for Admin Login
 app.post('/admin/login', async (req, res) => {
   // console.log(req.body); // Debugging line
   // console.log(req.headers); // Debugging line
@@ -253,7 +253,7 @@ app.post('/admin/login', async (req, res) => {
   }
 });
 
-// d. Route for Fetching Current User Profile Data
+// 7d. Route for Fetching Current User Profile Data
 app.get('/api/profile', authenticate, (req, res) => {
   console.log('req.user:', req.user); // Debugging line
     getUserProfile(req.user.userId)
@@ -266,7 +266,7 @@ app.get('/api/profile', authenticate, (req, res) => {
         });
 });
 
-// funtion to Fetch Current User Profile Data
+// 7e. funtion to Fetch Current User Profile Data
 function getUserProfile(userId) {
   console.log('Fetching profile for user ID:', userId);
   return User.findById(userId)
@@ -396,7 +396,7 @@ app.post('/message', authenticate, (req, res) => {
   console.log('Response sent:', res);
 });
 
-// 7c. Route Handler for Chat
+// 7c. Route Handler for Chat and Other Chatbot Funtions
 app.post("/chat", (req, res) => {
   const userInput = req.body.message;
   console.log('User input:', userInput); // Log user input

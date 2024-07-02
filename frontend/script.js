@@ -277,16 +277,30 @@ function handleSubmit(event) {
 
 // 5c. Function to display a message in the chat window
 function displayMessage(message, sender) {
-    // Create a new chat bubble element
+    // Create a wrapper for the message
+    const messageWrapper = document.createElement('div');
+    messageWrapper.classList.add('message-wrapper');
+
+    // Determine the sender's name
+    let senderName = sender === 'user'? 'You' : sender.charAt(0).toUpperCase() + sender.slice(1); // Capitalize first letter of sender name
+
+    // Create a sender label
+    const senderLabel = document.createElement('span');
+    senderLabel.classList.add('sender-label');
+    senderLabel.textContent = senderName; // Use the determined sender name
+
+    // Create a chat bubble for the message
     const chatBubble = document.createElement('div');
     chatBubble.classList.add('chat-bubble');
-    chatBubble.classList.add(sender === 'user' ? 'user-message' : 'bot-message');
-    
-    // Set the text content of the chat bubble
+    chatBubble.classList.add(sender === 'user'? 'user-message' : 'bot-message');
     chatBubble.textContent = message;
-    
-  // Update the ID used to retrieve the chat window element
-    document.getElementById('chat-box').appendChild(chatBubble);
+
+    // Append the sender label and chat bubble to the message wrapper
+    messageWrapper.appendChild(senderLabel);
+    messageWrapper.appendChild(chatBubble);
+
+    // Append the message wrapper to the chat box
+    document.getElementById('chat-box').appendChild(messageWrapper);
 }
 
 // 6. Profile Management
