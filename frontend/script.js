@@ -1,6 +1,6 @@
 // script.js
 
-// 1. Handle the sign-up form submission
+// 1. Handle the user sign-up form submission
 document.addEventListener('DOMContentLoaded', function() {
     const signupForm = document.getElementById('signup-form');
     const errorMessageContainer = document.getElementById('error-message');
@@ -47,7 +47,88 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 
-// 2. Function to handle user login
+// 2. JavaScript for Admin Sign-Up
+document.addEventListener('DOMContentLoaded', function() {
+    const adminSignupForm = document.getElementById('admin-signup-form');
+    if (adminSignupForm) {
+        adminSignupForm.addEventListener('submit', async function(event) {
+            event.preventDefault();
+            console.log('Admin signup form submitted'); // Debugging line
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const name = document.getElementById('name').value;
+            console.log({ email, password, name }); // Debugging line
+            const formData = { email, password, name };
+            try {
+                const response = await fetch('/admin/signup', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(formData),
+                });
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.message || 'Failed to sign up');
+                }
+                console.log('Sending signup data:', formData);
+                const data = await response.json();
+                console.log('Token received:', data.token); // Ensure this is not null or undefined
+                localStorage.setItem('token', data.token);
+                
+                // Display success message and option to proceed to login
+                const successMessage = document.createElement('div');
+                successMessage.textContent = 'Registration successful!';
+                document.body.appendChild(successMessage);
+
+                // Optionally, provide a link or button to proceed to the login page
+                const loginLink = document.createElement('a');
+                loginLink.href = '/admin/login';
+                loginLink.textContent = ' Proceed to Login';
+                successMessage.appendChild(loginLink);
+            } catch (error) {
+                document.getElementById('signup-message').textContent = 'Error: ' + error.message;
+                // Attempt to parse and display the server's error message if available
+                error.response.json().then(errorData => {
+                    document.getElementById('signup-message').textContent = 'Error: ' + errorData.message;
+                }).catch(() => {
+                    // Fallback error message if parsing fails
+                    document.getElementById('signup-message').textContent = 'An error occurred during sign-up. Please try again.';
+                });
+            }
+        });
+    }
+});
+// 4.  JavaScript for Admin Login
+const adminLoginForm = document.getElementById('admin-login-form');
+if (adminLoginForm) {
+    adminLoginForm.addEventListener('submit', async function(event) {
+        event.preventDefault();
+        console.log('Admin Login Form submitted');
+        const email = document.getElementById('email').value;
+        const password = document.getElementById('password').value;
+        try {
+            const response = await fetch('/admin/login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ email, password }),
+            });
+            if (!response.ok) throw new Error('Failed to log in');
+            const data = await response.json();
+            // Store the token and redirect to the dashboard
+            localStorage.setItem('token', data.token); // Assuming the response contains a token
+            window.location.href = '/admin-dashboard.html'; // Redirect to dashboard after login
+        } catch (error) 
+        {console.error('Login failed or token not received')};
+        
+        {document.getElementById('login-message').textContent = 'Error: ' + error.message;
+        }
+    });
+};
+
+// 3. Function to handle user login
 async function handleLogin(email, password) {
     try {
         const response = await fetch('/login', {
@@ -83,7 +164,7 @@ async function handleLogin(email, password) {
     };
 }
 
-// 2a. Add event listener to login form
+// 3b. Add event listener to login form
 document.addEventListener('DOMContentLoaded', function() {
     const loginForm = document.getElementById('login-form');
     if (loginForm) {
@@ -107,7 +188,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 
-// 3. Token Mangagement - Function to include the token in the Authorization header for protected routes
+// 3c. Token Mangagement - Function to include the token in the Authorization header for protected routes
 function includeTokenInRequest(requestOptions) {
     const token = localStorage.getItem('token');
     console.log('Token being sent:', token); // Log the token being sent
@@ -120,7 +201,7 @@ function includeTokenInRequest(requestOptions) {
     return requestOptions;
 }
 
-// 3a Example of using includeTokenInRequest for a fetch request to a protected route
+// 3d Example of using includeTokenInRequest for a fetch request to a protected route
 async function fetchProtectedResource() {
     const requestOptions = {
         method: 'GET',
@@ -137,9 +218,10 @@ async function fetchProtectedResource() {
       // Handle the response
 }
 
-// 4. Chat Functionality
 
-//4a. Function to Send Message to Server
+// 5. Chat Functionality
+
+//5a. Function to Send Message to Server
 function sendMessageToServer(message) {
     // Send an HTTP POST request to the server with the user message
     const requestOptions = {
@@ -172,7 +254,7 @@ function sendMessageToServer(message) {
     });
 }
 
-// 4b. Function to handle user input submission
+// 5b. Function to handle user input submission
 function handleSubmit(event) {
     // Prevent the default form submission behavior
     event.preventDefault();
@@ -190,7 +272,7 @@ function handleSubmit(event) {
     sendMessageToServer(userInput);
 }
 
-// 4c. Function to display a message in the chat window
+// 5c. Function to display a message in the chat window
 function displayMessage(message, sender) {
     // Create a new chat bubble element
     const chatBubble = document.createElement('div');
@@ -204,9 +286,9 @@ function displayMessage(message, sender) {
     document.getElementById('chat-box').appendChild(chatBubble);
 }
 
-// 5. Profile Management
+// 6. Profile Management
 
-// 5a. Standalone function for updating profile programmatically
+// 6a. Standalone function for updating profile programmatically
 async function updateProfile(profileData) {
     // Define your request options
     const requestOptions = {
@@ -225,7 +307,7 @@ async function updateProfile(profileData) {
     // Handle the response
 }
 
-// 5b. Function to fetch current user profile data from database
+// 6b. Function to fetch current user profile data from database
 async function fetchUserProfile() {
   // Include the token in the request headers for authentication
   const requestOptions = {
@@ -251,13 +333,18 @@ async function fetchUserProfile() {
   } catch (error) {
     console.error('Error fetching user profile:', error);
     // Optionally, display an error message to the user
+
+    // Check the current URL and execute code accordingly
+    if (window.location.pathname === '/profile.html') {
+        fetchUserProfile();
+    }
+
   }
 }
-
     // Call this function when the profile page is loaded
     document.addEventListener('DOMContentLoaded', fetchUserProfile);
 
-// 5c. Event listener for profile form submission Function
+// 6c.Event listener for profile form submission Function
 document.addEventListener('DOMContentLoaded', function() {
     const profileForm = document.getElementById('profile-form');
     if (profileForm) {
@@ -308,7 +395,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 })
 
-// 6. Function to handle logout
+// 7. Function to handle logout
 function logout() {
   // Remove the token from localStorage
   localStorage.removeItem('token');
@@ -322,7 +409,7 @@ function logout() {
    .catch(error => console.error('Logout error:', error));
 }
 
-// 6a. Attach the logout function to the logout button
+// 7b. Attach the logout function to the logout button
 document.addEventListener('DOMContentLoaded', () => {
   // Select all elements with the class 'menu-item' and check if the text content is 'Log Out'
   document.querySelectorAll('.menu-item').forEach(button => {
@@ -335,7 +422,7 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 });
 
-// 7. Text-to-Speech 
+// 8. Text-to-Speech 
 document.getElementById('speakButton').addEventListener('click', (event) => {
     event.preventDefault();
   const chatBox = document.getElementById('chat-box');
@@ -344,7 +431,8 @@ document.getElementById('speakButton').addEventListener('click', (event) => {
   speechSynthesis.speak(utterance);
 });
 
-// 8. Speech-to-Text
+
+// 9. Speech-to-Text
 const listenButton = document.getElementById('listenButton');
 let recognizing = false;
 const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition || window.mozSpeechRecognition || window.msSpeechRecognition)();

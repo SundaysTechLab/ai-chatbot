@@ -34,12 +34,34 @@ const app = express();
     saveUninitialized: true
   }));
 
-// 4. Serve static files from the 'frontend' directory
+// 4. Middleware to authenticate admins
+function authenticateAdmin(req, res, next) {
+  const authHeader = req.headers.authorization;
+  if (!authHeader) return res.status(401).json({ message: 'Unauthorized' });
+
+  const token = authHeader.split(' ')[1]; // Assuming the format "Bearer <token>"
+  jwt.verify(token, '1X0t7pZk$fjG@^3rM#DLn6qA9C!eH5sJ', async (err, payload) => {
+      if (err) return res.status(403).json({ message: 'Forbidden' });
+      
+      try {
+          const user = await User.findById(payload.userId);
+          if (!user ||!user.isAdmin) return res.status(403).json({ message: 'Forbidden' });
+          
+          req.user = user; // Attach user to request object for further processing
+          next(); // Proceed to the route handler
+      } catch (error) {
+          console.error(error);
+          res.status(500).json({ message: 'Internal Server Error' });
+      }
+  });
+}
+
+// 5. Serve static files from the 'frontend' directory
 const frontendPath = path.join(__dirname, '..', 'frontend');
 console.log('Frontend path:', frontendPath);
 app.use(express.static(frontendPath));
 
-// 4a. Define routes for each HTML page
+// 5a. Define routes for each HTML page
 app.get('/', (req, res) => {
   res.sendFile('index.html', { root: path.join(__dirname, 'frontend') });
 });
@@ -56,8 +78,20 @@ app.get('/chat', (req, res) => {
   res.sendFile(path.join(frontendPath, 'chat.html'));
 });
 
-// 5. Authentication Setup for Login & Logout Routes
-// 5a. Login Endpoint
+app.get('/admin/signup', (req, res) => {
+  res.sendFile('admin-signup.html', { root: frontendPath });
+});
+
+app.get('/admin/login', (req, res) => {
+  res.sendFile('admin-login.html', { root: frontendPath });
+});
+
+app.get('/admin/dashboard', (req, res) => {
+  res.sendFile('admin-dashboard.html', { root: frontendPath });
+});
+
+// 6. Authentication Setup for User Login & Logout Routes
+// 6a. Login Endpoint
 app.post('/login', async (req, res) => {
   // Extract email and password from the request body
   const { email, password } = req.body;
@@ -94,7 +128,7 @@ app.post('/login', async (req, res) => {
   }
 });
 
-// 5b. Logout Route
+// 6b. Logout Route
 app.get('/logout', (req, res) => {
   req.session.destroy(err => {
     if (err) {
@@ -106,9 +140,9 @@ app.get('/logout', (req, res) => {
   });
 })
 
-// 6. Other Routes Definition API endpoints & functions
+// 7. Other Routes Definition/API endpoints & functions
 
-// 6a. Route for handling User Signup
+// a. Route for handling User Signup
 app.post('/', async (req, res) => {
   // Extract email, password, and name from the request body
   const { email, password, name } = req.body;
@@ -144,7 +178,82 @@ app.post('/', async (req, res) => {
   });
 });
 
-// 6b. Route for Fetching Current User Profile Data
+// b. Admin Sign Up Route
+app.post('/admin/signup', async (req, res) => {
+  // console.log(req.body); // Debugging line
+  // console.log(req.headers); // Debugging line
+  try {
+      console.log('Admin signup initiated'); // Log when signup starts
+      const { email, password, name } = req.body;
+      console.log(`Signup data received: ${JSON.stringify(req.body)}`); // Log the received data
+
+      // Validate and sanitize input...
+
+      const existingUser = await User.findOne({ email });
+      if (existingUser) {
+          console.log('User already exists'); // Log if user already exists
+          return res.status(400).json({ message: 'Email is already registered.' });
+      }
+      const hashedPassword = await bcrypt.hash(password, 10);
+      const newUser = new User({
+          name,
+          email,
+          password: hashedPassword,
+          role: 'admin',
+          isAdmin: true
+      });
+      console.log('Creating new admin user'); // Log before creating user
+      await newUser.save();
+      const token = jwt.sign(
+          { userId: newUser._id, email: newUser.email },
+          '1X0t7pZk$fjG@^3rM#DLn6qA9C!eH5sJ',
+          { expiresIn: '24h' }
+      );
+      console.log('Admin user created and token generated'); // Log after successful creation
+      res.status(201).json({ message: 'Admin account created successfully', token });
+  } catch (error) {
+      console.error('Error creating admin user:', error);
+      res.status(500).json({ message: 'Error creating admin user', error: error.toString() });
+}
+});
+
+// c. Route for Admin Login
+app.post('/admin/login', async (req, res) => {
+  // console.log(req.body); // Debugging line
+  // console.log(req.headers); // Debugging line
+  try {
+      console.log('Admin login initiated');
+      const { email, password } = req.body;
+      console.log(`Login data received: ${JSON.stringify(req.body)}`);
+      
+      // Validate and sanitize input...
+
+      const user = await User.findOne({ email });
+      if (!user) {
+          console.log('No user found with the provided email.');
+          return res.status(400).json({ message: 'Invalid credentials.' });
+      }
+
+      const isMatch = await bcrypt.compare(password, user.password);
+      if (!isMatch) {
+          console.log('Password does not match.');
+          return res.status(400).json({ message: 'Invalid credentials.' });
+      }
+
+      const token = jwt.sign(
+          { userId: user._id, email: user.email },
+          '1X0t7pZk$fjG@^3rM#DLn6qA9C!eH5sJ',
+          { expiresIn: '24h' }
+      );
+      console.log('Token generated:', token);
+      res.status(200).json({ message: 'Logged in successfully', token });
+  } catch (error) {
+      console.error('Error during admin login:', error);
+      res.status(500).json({ message: 'Internal server error', error: error.toString() });
+  }
+});
+
+// d. Route for Fetching Current User Profile Data
 app.get('/api/profile', authenticate, (req, res) => {
   console.log('req.user:', req.user); // Debugging line
     getUserProfile(req.user.userId)
@@ -157,7 +266,7 @@ app.get('/api/profile', authenticate, (req, res) => {
         });
 });
 
-// funtion to fetch user profile
+// funtion to Fetch Current User Profile Data
 function getUserProfile(userId) {
   console.log('Fetching profile for user ID:', userId);
   return User.findById(userId)

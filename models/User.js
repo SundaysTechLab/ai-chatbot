@@ -8,7 +8,12 @@ const userSchema = new mongoose.Schema({
   password: { type: String, required: true },
   name: { type: String, required: true },
   phoneNumber: { type: String, required: false }, // Make phoneNumber optional
-  address: { type: String, required: false } // Make address optional
+  address: { type: String, required: false }, // Make address optional
+  role: { type: String, default: 'user' }, // Default role is 'user'
+  // isAdmin: {
+    //  type: Boolean,
+    //  default: false
+  // }
 });
 
 module.exports = mongoose.model('User', userSchema);
