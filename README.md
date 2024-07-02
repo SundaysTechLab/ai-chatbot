@@ -1,4 +1,4 @@
-# AI-Based Chatbot for Customer Service
+# AI-Based Chatbot for Customer Support
 
 This project implements an AI-based chatbot for customer service using Node.js, Express, and various AI techniques.
 
